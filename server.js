@@ -10,15 +10,22 @@ const port = process.env.PORT || 8000;
 app.use(express.json());
 
 // Serve static files from the "public" folder
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname)));
+
+// Serve the favicon from the "public" folder
 const faviconPath = path.join(__dirname, 'favicon.ico');
 app.use(favicon(faviconPath));
-app.get('/favicon', (req, res) => {
-  res.sendFile(`${__dirname}/favicon.ico`);
+
+// Serve bg.jpg
+app.get('/bg.jpg', (req, res) => {
+  res.sendFile(path.join(__dirname, 'bg.jpg'));
 });
+
+// Serve the index.html file
 app.get('/', (req, res) => {
-  res.sendFile(`${__dirname}/index.html`);
+  res.sendFile(path.join(__dirname,'index.html'));
 });
+
 // Get API key from environment variables
 const apiKey = process.env.GOOGLE_API_KEY;
 if (!apiKey) {
