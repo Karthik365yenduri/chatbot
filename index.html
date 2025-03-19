@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Chatbot Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Chatbot Application</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <style>
-    /* Basic reset and styling */
+    /* Reset margin and padding */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body styling */
     body {
       font-family: 'Arial', sans-serif;
-      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -20,47 +26,52 @@
       background-image: url('bg.jpg'); /* Add your image URL here */
       background-size: cover;
       background-position: center;
+      color: #333;
+      overflow: hidden;
     }
 
+    /* Chat container styling */
     .chat-container {
-      background: rgba(255, 255, 255, 0.8); /* Semi-transparent background to stand out on the image */
-      width: 800px; /* Increased width */
-      max-width: 100%;
-      height: 600px; /* Increased height */
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 900px;
+      height: 80vh;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
       display: flex;
       flex-direction: column;
       border: 3px solid #007BFF;
     }
 
+    /* Header styling */
     .chat-header {
       background: #007BFF;
-      color: #fff;
-      padding: 25px;
+      color: white;
+      padding: 20px;
+      font-size: 24px;
       text-align: center;
-      font-size: 28px;
       border-bottom: 3px solid #0056b3;
     }
 
+    /* Chat box styling */
     .chat-box {
-      padding: 25px;
-      height: 420px; /* Increased chat box height */
+      flex: 1;
+      padding: 20px;
       overflow-y: auto;
       border-bottom: 3px solid #ddd;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
+    /* Chat message styling */
     .chat-message {
       padding: 15px;
       border-radius: 10px;
       max-width: 80%;
       word-wrap: break-word;
-      font-size: 18px;
-      line-height: 1.5;
+      font-size: 16px;
+      line-height: 1.4;
     }
 
     .chat-message.user {
@@ -75,6 +86,7 @@
       text-align: left;
     }
 
+    /* Form styling */
     .chat-form {
       display: flex;
       border-top: 1px solid #ddd;
@@ -83,20 +95,20 @@
 
     .chat-form input {
       flex: 1;
-      padding: 15px;
+      padding: 14px;
       border: none;
-      font-size: 18px;
+      font-size: 16px;
       border-radius: 8px 0 0 8px;
       outline: none;
       box-shadow: none;
     }
 
     .chat-form button {
-      padding: 15px 25px;
+      padding: 14px 24px;
       border: none;
       background: #007BFF;
       color: #fff;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
       border-radius: 0 8px 8px 0;
       transition: background-color 0.3s ease;
@@ -106,9 +118,9 @@
       background: #0056b3;
     }
 
-    /* Scrollbar styles */
+    /* Scrollbar styling */
     .chat-box::-webkit-scrollbar {
-      width: 10px;
+      width: 8px;
     }
 
     .chat-box::-webkit-scrollbar-thumb {
@@ -124,30 +136,32 @@
     @media (max-width: 1024px) {
       .chat-container {
         width: 90%;
-        height: 70%;
+        height: 75vh;
       }
 
       .chat-header {
-        font-size: 24px;
+        font-size: 22px;
       }
 
       .chat-box {
-        height: 350px;
+        padding: 16px;
+        height: calc(100% - 120px); /* Adjust for the header and input */
       }
 
       .chat-form input {
-        font-size: 16px;
+        font-size: 15px;
       }
 
       .chat-form button {
-        font-size: 16px;
+        font-size: 15px;
       }
     }
 
     @media (max-width: 768px) {
       .chat-container {
         width: 100%;
-        height: 80%;
+        height: 80vh;
+        border-radius: 10px;
       }
 
       .chat-header {
@@ -155,7 +169,8 @@
       }
 
       .chat-box {
-        height: 270px;
+        padding: 14px;
+        height: calc(100% - 110px); /* Adjust for the header and input */
       }
 
       .chat-form input {
@@ -166,12 +181,37 @@
         font-size: 14px;
       }
     }
+
+    @media (max-width: 480px) {
+      .chat-container {
+        height: 90vh;
+        border-radius: 8px;
+      }
+
+      .chat-header {
+        font-size: 18px;
+      }
+
+      .chat-box {
+        padding: 12px;
+        height: calc(100% - 100px); /* Adjust for the header and input */
+      }
+
+      .chat-form input {
+        font-size: 13px;
+      }
+
+      .chat-form button {
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
 <body>
+
   <div class="chat-container">
     <div class="chat-header">
-      <h2> Chatbot</h2>
+      <h2>Chatbot</h2>
     </div>
     <div id="chat-box" class="chat-box">
       <!-- Chat messages will appear here -->
@@ -229,5 +269,6 @@
       }
     });
   </script>
+
 </body>
 </html>
