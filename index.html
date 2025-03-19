@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Chatbot Application</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <style>
+    /* Basic reset and styling */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-image: url('bg.jpg'); /* Add your image URL here */
+      background-size: cover;
+      background-position: center;
+    }
+
+    .chat-container {
+      background: rgba(255, 255, 255, 0.8); /* Semi-transparent background to stand out on the image */
+      width: 800px; /* Increased width */
+      max-width: 100%;
+      height: 600px; /* Increased height */
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 2px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      border: 3px solid #007BFF;
+    }
+
+    .chat-header {
+      background: #007BFF;
+      color: #fff;
+      padding: 25px;
+      text-align: center;
+      font-size: 28px;
+      border-bottom: 3px solid #0056b3;
+    }
+
+    .chat-box {
+      padding: 25px;
+      height: 420px; /* Increased chat box height */
+      overflow-y: auto;
+      border-bottom: 3px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .chat-message {
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 80%;
+      word-wrap: break-word;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .chat-message.user {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .chat-message.bot {
+      background-color: #f1f0f0;
+      align-self: flex-start;
+      text-align: left;
+    }
+
+    .chat-form {
+      display: flex;
+      border-top: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+
+    .chat-form input {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      font-size: 18px;
+      border-radius: 8px 0 0 8px;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .chat-form button {
+      padding: 15px 25px;
+      border: none;
+      background: #007BFF;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 0 8px 8px 0;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-form button:hover {
+      background: #0056b3;
+    }
+
+    /* Scrollbar styles */
+    .chat-box::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 123, 255, 0.7);
+      border-radius: 5px;
+    }
+
+    .chat-box::-webkit-scrollbar-track {
+      background-color: #f1f1f1;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1024px) {
+      .chat-container {
+        width: 90%;
+        height: 70%;
+      }
+
+      .chat-header {
+        font-size: 24px;
+      }
+
+      .chat-box {
+        height: 350px;
+      }
+
+      .chat-form input {
+        font-size: 16px;
+      }
+
+      .chat-form button {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .chat-container {
+        width: 100%;
+        height: 80%;
+      }
+
+      .chat-header {
+        font-size: 20px;
+      }
+
+      .chat-box {
+        height: 270px;
+      }
+
+      .chat-form input {
+        font-size: 14px;
+      }
+
+      .chat-form button {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h2> Chatbot</h2>
+    </div>
+    <div id="chat-box" class="chat-box">
+      <!-- Chat messages will appear here -->
+    </div>
+    <form id="chat-form" class="chat-form">
+      <input type="text" id="message" placeholder="Type your message..." autocomplete="off" required>
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const chatForm = document.getElementById('chat-form');
+      const chatBox = document.getElementById('chat-box');
+      const messageInput = document.getElementById('message');
+
+      // Handle form submission
+      chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        // Append user's message to the chat box
+        appendMessage('user', message);
+        messageInput.value = '';
+
+        // Send the message to the backend API
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message })
+          });
+          const data = await response.json();
+          if (data.response) {
+            appendMessage('bot', data.response);
+          } else {
+            appendMessage('bot', 'Sorry, something went wrong.');
+          }
+        } catch (error) {
+          console.error('Error calling API:', error);
+          appendMessage('bot', 'Error connecting to the server.');
+        }
+      });
+
+      // Helper function to append messages to the chat box
+      function appendMessage(sender, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('chat-message', sender);
+        messageDiv.textContent = text;
+        chatBox.appendChild(messageDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>
